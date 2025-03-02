@@ -115,3 +115,7 @@ class InventoryUser(HttpUser):
 # To run the Locust tests:
 # locust -f test_main.py --headless -u 10 -r 1 -t 1m  # For 10 users
 # locust -f test_main.py --headless -u 100 -r 10 -t 1m  # For 100 users
+
+# Open Locust Web UI: 
+# locust -f test_main.py -u 10 -r 1 -t 1m --host http://localhost:8000  # For 10 users
+# locust -f test_main.py -u 100 -r 10 -t 1m --host http://localhost:8000 # For 100 users
