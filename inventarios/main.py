@@ -68,9 +68,19 @@ async def update_product(sid, data):
         product_id = data.get('id')
         new_quantity = data.get('quantity')
         
+        if not isinstance(new_quantity, int):
+            await sio.emit('error', "Quantity must be an integer", room=sid)
+            return
+    
         if product_id in inventory:
             product = inventory[product_id]
-            product.quantity = new_quantity
+            quantity_change = product.quantity + new_quantity
+
+            if quantity_change <= 0:
+                await sio.emit('error', "We do not have more units than those available.", room=sid)
+                return
+
+            product.quantity = product.quantity + new_quantity
             product.last_updated = datetime.now()
             # Send only the updated product
             product_data = {
@@ -81,7 +91,7 @@ async def update_product(sid, data):
             }
             # Broadcast update to all connected clients
             await sio.emit('inventory_update', product_data)
-            print(f"Product {product_id} updated by {sid}")
+            print(f"Product {product_id} updated by {sid}. Quantity changed by {quantity_change} units")
         else:
             await sio.emit('error', f"Product {product_id} not found", room=sid)
     except Exception as e:

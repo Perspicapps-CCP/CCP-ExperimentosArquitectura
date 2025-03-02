@@ -101,7 +101,8 @@
                     <input type="number" 
                            value="${product.quantity}" 
                            min="0"
-                           onchange="updateProduct(${product.id}, this.value)"
+                           data-current="${product.quantity}"
+                           onchange="updateProduct(${product.id}, this.value, this.dataset.current)"
                            oninput="validateQuantity(this)">
                 </p>
                 <p>Last Updated: ${product.last_updated ? new Date(product.last_updated).toLocaleString() : 'Never'}</p>
@@ -115,16 +116,22 @@
             }
         }
         
-        function updateProduct(id, quantity) {
-            const value = parseInt(quantity);
-            if (isNaN(value) || value < 0) {
-                console.error('Invalid quantity value:', quantity);
+        function updateProduct(id, newQuantity, currentQuantity) {
+            const current = parseInt(currentQuantity);
+            const next = parseInt(newQuantity);
+            const difference = next - current;
+            console.log("Current quantity:", currentQuantity);
+            console.log("New quantity:", newQuantity);
+            console.log("Difference:", difference);
+
+            if (isNaN(next) || currentQuantity < 0) {
+                console.error('Invalid quantity value:', newQuantity);
                 return;
             }
             
             socket.emit('update_product', {
                 id: id,
-                quantity: value
+                quantity: difference
             });
         }
     </script>
