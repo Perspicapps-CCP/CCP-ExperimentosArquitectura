@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  ventas_api:
+    build: ./ventas
+    command: uvicorn main:app --host 0.0.0.0 --port 9001
+    container_name: ventas_api
+    ports:
+      - "9001:9001"
+    environment:
+      DB_USER: ventas
+      DB_PASSWORD: postgres
+      DB_HOST: ventas_db
+      DB_PORT: 5432
+      DB_NAME: ventas_db
+    depends_on:
+      - ventas_db
+    networks:
+      - general
+      - ventas_net
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:9001/ventas/health || exit 1" ]
+      interval: 5s
+      timeout: 1s
+      retries: 2
+    restart: on-failure
+
+  ventas_db:
+    image: postgres:latest
+    container_name: ventas_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ventas
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ventas_db
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ventas_net
+volumes:
+  postgres_data:
+networks:
+  general:
+  ventas_net:
