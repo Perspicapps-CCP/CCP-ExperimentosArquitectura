@@ -29,7 +29,7 @@ def reset(db: Session = Depends(get_db)):
 
 
 # health
-@prefix_router.get("/ping")
+@prefix_router.get("/health")
 def ping():
     return "pong"
 
