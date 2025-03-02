@@ -24,7 +24,7 @@ inventory: Dict[int, Product] = {
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-sio = socketio.AsyncServer(cors_allowed_origins='*', async_mode='asgi', transports=['websocket'])
+sio = socketio.AsyncServer(cors_allowed_origins='*', async_mode='asgi', transports=["websocket", "polling"])
 socket_app = socketio.ASGIApp(sio, app)
 
 
