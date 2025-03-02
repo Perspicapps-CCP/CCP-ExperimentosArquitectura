@@ -23,7 +23,7 @@ class ManufacturerCreate(ManufacturerCreateBase):
     country: Optional[str] = None
 
 
-class ManufacturerResponse(ManufacturerCreateBase):
+class ManufacturerResponse(BaseModel):
     id: str
     createdAt: datetime
 
