@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Socket.IO Test</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <style>
+        .product {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 10px;
+        }
+        .low-stock {
+            background-color: #ffebee;
+        }
+    </style>
+</head>
+<body>
+    <button onclick="sendMessage()">Send Message</button>
+    <div id="messages"></div>
+    <div id="inventory"></div>
+    <script>
+        const socket = io('ws://localhost:8000',{
+            transports: ['websocket'], 
+            upgrade: false,
+        });
+        
+        socket.on('message', (data) => {
+            console.log('Message from server:', data);
+            const messages = document.getElementById('messages');
+            messages.innerHTML += `<p>${data}</p>`;
+        });
+
+        function sendMessage() {
+            socket.emit('message', 'Hello from client!');
+        }
+
+        socket.on('connect', () => {
+            console.log('Connected to server');
+            socket.emit('inventory_subscribe');
+        });
+
+        socket.on('inventory_update', (data) => {
+            console.log('Inventory update:', data);
+            updateInventoryDisplay(data);
+        });
+
+        socket.on('error', (error) => {
+            console.error('Server error:', error);
+            alert('Error: ' + error);
+        });
+
+        // Replace the existing updateInventoryDisplay function
+        function updateInventoryDisplay(data) {
+            const container = document.getElementById('inventory');
+            
+            if (!data || typeof data !== 'object') {
+                console.error('Invalid inventory data received:', data);
+                return;
+            }
+
+            // Check if we're receiving a single product update or full inventory
+            if (!Array.isArray(data)) {
+                // Single product update                
+                updateSingleProduct(data);
+                return;
+            }
+        
+            // Full inventory update
+            container.innerHTML = '';
+            
+            // Handle both array and object formats
+            Object.values(data).forEach(renderProduct);
+        }
+
+        function updateSingleProduct(product) {
+            const existingProduct = document.querySelector(`[data-product-id="${product.id}"]`);
+            if (existingProduct) {
+                existingProduct.className = `product ${product.quantity < 5 ? 'low-stock' : ''}`;
+                existingProduct.innerHTML = createProductHTML(product);
+            }
+        }
+        
+        function renderProduct(product) {
+            if (!product || !product.id || product.quantity === undefined) {
+                console.error('Invalid product data:', product);
+                return;
+            }
+        
+            const productDiv = document.createElement('div');
+            productDiv.className = `product ${product.quantity < 5 ? 'low-stock' : ''}`;
+            productDiv.setAttribute('data-product-id', product.id);
+            productDiv.innerHTML = createProductHTML(product);
+            document.getElementById('inventory').appendChild(productDiv);
+        }
+
+        function createProductHTML(product) {
+            return `
+                <h3>${product.name || 'Unknown Product'}</h3>
+                <p>ID: ${product.id}</p>
+                <p>Quantity: 
+                    <input type="number" 
+                           value="${product.quantity}" 
+                           min="0"
+                           onchange="updateProduct(${product.id}, this.value)"
+                           oninput="validateQuantity(this)">
+                </p>
+                <p>Last Updated: ${product.last_updated ? new Date(product.last_updated).toLocaleString() : 'Never'}</p>
+            `;
+        }
+        // Add input validation
+        function validateQuantity(input) {
+            const value = parseInt(input.value);
+            if (isNaN(value) || value < 0) {
+                input.value = 0;
+            }
+        }
+        
+        function updateProduct(id, quantity) {
+            const value = parseInt(quantity);
+            if (isNaN(value) || value < 0) {
+                console.error('Invalid quantity value:', quantity);
+                return;
+            }
+            
+            socket.emit('update_product', {
+                id: id,
+                quantity: value
+            });
+        }
+    </script>
+</body>
+</html>
