@@ -1,0 +1,23 @@
+# INGRESS
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: microservices-ingress
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /ventas
+        pathType: Prefix
+        backend:
+          service:
+            name: ventas-api
+            port:
+              number: 9001
+      - path: /inventario
+        pathType: Prefix
+        backend:
+          service:
+            name: inventario-api
+            port:
+              number: 8001

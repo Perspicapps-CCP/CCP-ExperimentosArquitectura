@@ -1,0 +1,124 @@
+# VENTAS DB
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ventas-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ventas-db
+  template:
+    metadata:
+      labels:
+        app: ventas-db
+    spec:
+      containers:
+      - name: ventas-db
+        image: postgres:latest
+        env:
+        - name: POSTGRES_USER
+          value: ventas
+        - name: POSTGRES_PASSWORD
+          value: postgres
+        - name: POSTGRES_DB
+          value: ventas_db
+        ports:
+        - containerPort: 5432
+        readinessProbe:
+          exec:
+            command:
+            - pg_isready
+            - -d
+            - $(POSTGRES_DB)
+            - -U
+            - $(POSTGRES_USER)
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 5
+        volumeMounts:
+        - name: ventas-data
+          mountPath: /var/lib/postgresql/data
+      volumes:
+      - name: ventas-data
+        persistentVolumeClaim:
+          claimName: ventas-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ventas-db
+spec:
+  selector:
+    app: ventas-db
+  ports:
+  - port: 5432
+    targetPort: 5432
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ventas-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+# VENTAS API
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ventas-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ventas-api
+  template:
+    metadata:
+      labels:
+        app: ventas-api
+    spec:
+      containers:
+      - name: ventas-api
+        image: ventas-api:latest
+        command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "9001"]
+        ports:
+        - containerPort: 9001
+        env:
+        - name: DB_USER
+          value: ventas
+        - name: DB_PASSWORD
+          value: postgres
+        - name: DB_HOST
+          value: ventas-db
+        - name: DB_PORT
+          value: "5432"
+        - name: DB_NAME
+          value: ventas_db
+        - name: BROKER_HOST
+          value: rabbitmq
+        - name: RESERVE_ITEMS_TOPIC
+          value: rpc_reserve_items
+        livenessProbe:
+          httpGet:
+            path: /ventas/health
+            port: 9001
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 1
+          failureThreshold: 2
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ventas-api
+spec:
+  selector:
+    app: ventas-api
+  ports:
+  - port: 9001
+    targetPort: 9001
