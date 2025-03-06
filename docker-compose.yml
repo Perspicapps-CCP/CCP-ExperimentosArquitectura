@@ -27,7 +27,10 @@ services:
       BROKER_HOST: rabbitmq
       RESERVE_ITEMS_TOPIC: rpc_reserve_items
     depends_on:
-      - ventas_db
+      ventas_db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
     networks:
       - general
       - ventas_net
@@ -62,7 +65,7 @@ services:
     ports:
       - "8001:8001"
     environment:
-      DB_USER: postgres
+      DB_USER: inventario
       DB_PASSWORD: postgres
       DB_HOST: inventario_db
       DB_PORT: 5432
@@ -70,7 +73,10 @@ services:
       BROKER_HOST: rabbitmq
       RESERVE_ITEMS_TOPIC: rpc_reserve_items
     depends_on:
-      - inventario_db
+      inventario_db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
     networks:
       - general
       - inventario_net
@@ -87,7 +93,7 @@ services:
     volumes:
       - inventario_data:/var/lib/postgresql/data
     environment:
-      POSTGRES_USER: postgres
+      POSTGRES_USER: inventario
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: inventario_db
     healthcheck:
