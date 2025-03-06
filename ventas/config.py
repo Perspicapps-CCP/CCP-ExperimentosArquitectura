@@ -11,6 +11,6 @@ DB_PORT = os.getenv("DB_PORT", "5432")
 DB_NAME = os.getenv("DB_NAME", "ventas")
 USERS_PATH = os.getenv("USERS_PATH")
 BROKER_HOST = os.getenv("BROKER_HOST", "localhost")
-CONSUMER_TOPIC = os.getenv("CONSUMER_TOPIC", "rpc_reserve_items")
+RESERVE_ITEMS_TOPIC = os.getenv("RESERVE_ITEMS_TOPIC", "rpc_reserve_items")
 
 DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
