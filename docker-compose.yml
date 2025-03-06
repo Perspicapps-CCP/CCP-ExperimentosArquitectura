@@ -1,6 +1,17 @@
 version: '3.8'
 
 services:
+
+  rabbitmq:
+    image: rabbitmq:4.0-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672" 
+      - "15672:15672"
+    restart: unless-stopped
+    networks:
+      - general
+
   ventas_api:
     build: ./ventas
     command: uvicorn main:app --host 0.0.0.0 --port 9001
@@ -13,6 +24,8 @@ services:
       DB_HOST: ventas_db
       DB_PORT: 5432
       DB_NAME: ventas_db
+      BROKER_HOST: rabbitmq
+      RESERVE_ITEMS_TOPIC: rpc_reserve_items
     depends_on:
       - ventas_db
     networks:
@@ -29,7 +42,7 @@ services:
     image: postgres:latest
     container_name: ventas_db
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ventas_data:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: ventas
       POSTGRES_PASSWORD: postgres
@@ -41,8 +54,54 @@ services:
       retries: 5
     networks:
       - ventas_net
+
+  inventario_api:
+    build: ./inventarios
+    command: uvicorn src.main:app --host 0.0.0.0 --port 8001
+    container_name: inventario_api
+    ports:
+      - "8001:8001"
+    environment:
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_HOST: inventario_db
+      DB_PORT: 5432
+      DB_NAME: inventario_db
+      BROKER_HOST: rabbitmq
+      RESERVE_ITEMS_TOPIC: rpc_reserve_items
+    depends_on:
+      - inventario_db
+    networks:
+      - general
+      - inventario_net
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8001/inventario/ping || exit 1"]
+      interval: 5s
+      timeout: 1s
+      retries: 2
+    restart: on-failure
+
+  inventario_db:
+    image: postgres:latest
+    container_name: inventario_db
+    volumes:
+      - inventario_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: inventario_db
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - inventario_net
+
 volumes:
-  postgres_data:
+  ventas_data:
+  inventario_data:
 networks:
   general:
   ventas_net:
+  inventario_net:
