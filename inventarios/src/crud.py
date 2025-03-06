@@ -5,6 +5,7 @@ from datetime import datetime
 
 def get_inventory(db: Session):
     return db.query(Product).options(joinedload(Product.inventories))\
+        .order_by(Product.name.asc())\
         .all()
 
 def get_inventory_item(db: Session, product_id: str):
