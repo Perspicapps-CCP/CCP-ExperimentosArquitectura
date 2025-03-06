@@ -1,7 +1,7 @@
 import socketio
 from sqlalchemy.orm import Session
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, APIRouter
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from src import crud
@@ -25,25 +25,25 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 app.mount("/static", StaticFiles(directory="src/static"), name="static")
+prefix_router = APIRouter(prefix="/inventario")
 
 sio = socketio.AsyncServer(cors_allowed_origins='*', async_mode='asgi', transports=["websocket", "polling"])
-socket_app = socketio.ASGIApp(sio, app)
 
 
-@app.get("/ping")
+@prefix_router.get("/ping")
 def healthcheck():
     return "pong"
 
-@app.post("/reset")
+@prefix_router.post("/reset")
 def reset(db: Session = Depends(get_db)):
     crud.reset_db(db)
     return {"message": "Database reset"}
 
-@app.get("/inventory")
+@prefix_router.get("/inventory")
 def get_inventory(db: Session = Depends(get_db)):
     return crud.get_inventory(db)
 
-@app.get("/socket-test")
+@prefix_router.get("/socket-test")
 async def socket_test():
     return FileResponse("src/static/index.html")
 
@@ -118,4 +118,5 @@ async def update_product(sid, data):
     finally:
         db_generator.close()
 
-app = socket_app
+app.include_router(prefix_router)
+app = socketio.ASGIApp(sio, app)
