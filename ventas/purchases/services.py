@@ -3,7 +3,7 @@ from uuid import UUID, uuid4
 from typing import List, Optional
 
 from . import models, schemas
-from .inventory_client.dummy_client import DummyInventoryClient
+from .inventory_client.inventory_rpc_client import InventoryRpcClient
 from .inventory_client.entities import InventoryReserverdItem
 from .logistic_client.dummy_client import DummyLogisticClient
 from .exceptions import CanotReserveAllProducts
@@ -48,7 +48,7 @@ def create_purchase(db: Session, purchase: schemas.PurchaseCreate) -> models.Pur
     Returns:
         models.Purchase: The created purchase.
     """
-    logistic_client = DummyInventoryClient()
+    logistic_client = InventoryRpcClient()
     order_id = uuid4()
     reserved_itmes = logistic_client.reserve_items(
         order_id,

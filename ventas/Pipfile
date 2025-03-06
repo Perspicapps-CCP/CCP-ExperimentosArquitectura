@@ -12,6 +12,7 @@ psycopg2-binary = "*"
 uvicorn = {extras = ["standard"], version = "*"}
 gunicorn = "*"
 pymemcache = "*"
+pika = "*"
 
 [dev-packages]
 black = "*"
