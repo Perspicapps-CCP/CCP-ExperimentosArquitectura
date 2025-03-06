@@ -5,7 +5,7 @@ import json
 from typing import List
 from .entities import InventoryReserverdItem
 from .base_client import InventoryClient
-from config import BROKER_HOST, CONSUMER_TOPIC
+from config import BROKER_HOST, RESERVE_ITEMS_TOPIC
 
 
 class InventoryRpcClient(InventoryClient):
@@ -39,7 +39,7 @@ class InventoryRpcClient(InventoryClient):
         json_payload = json.dumps([item.dict() for item in items])
         self.channel.basic_publish(
             exchange='',
-            routing_key=CONSUMER_TOPIC,
+            routing_key=RESERVE_ITEMS_TOPIC,
             properties=pika.BasicProperties(
                 reply_to=self.callback_queue,
                 correlation_id=self.corr_id,
