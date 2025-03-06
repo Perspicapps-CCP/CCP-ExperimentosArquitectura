@@ -6,12 +6,12 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from src import crud
 from src.consumer import RabbitMQConsumer
-from src.config import BROKER_HOST, CONSUMER_TOPIC
+from src.config import BROKER_HOST, RESERVE_ITEMS_TOPIC
 from src.database import init_db_with_defaults, get_db
 
 
 # Create a global consumer instance
-_consumer = RabbitMQConsumer(BROKER_HOST, CONSUMER_TOPIC)
+_consumer = RabbitMQConsumer(BROKER_HOST, RESERVE_ITEMS_TOPIC)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
