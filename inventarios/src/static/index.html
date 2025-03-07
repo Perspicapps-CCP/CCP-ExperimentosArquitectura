@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Socket.IO Test</title>
+    <title>Inventory realtime Test</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <style>
         .product {
@@ -19,7 +19,9 @@
     <div id="messages"></div>
     <div id="inventory"></div>
     <script>
-        const socket = io('http://localhost:8001',{
+        
+        const socket = io({
+            path: '/inventario/socket.io',
             transports: ["websocket", "polling"], 
             upgrade: false,
         });

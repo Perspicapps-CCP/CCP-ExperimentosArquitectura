@@ -143,4 +143,4 @@ async def update_product(sid, data):
 
 
 app.include_router(prefix_router)
-app = socketio.ASGIApp(sio, app)
+app = socketio.ASGIApp(sio, app, socketio_path="/inventario/socket.io")

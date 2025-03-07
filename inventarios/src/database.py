@@ -123,8 +123,33 @@ def init_db_with_defaults(db: SessionLocal = None):
                 ),
                 Inventory(
                     product_id=default_products[4].id,
-                    quantity=8,
+                    quantity=30,
                     location="Warehouse C",
+                ),
+                Inventory(
+                    product_id=default_products[5].id,
+                    quantity=60,
+                    location="Warehouse C",
+                ),
+                Inventory(
+                    product_id=default_products[6].id,
+                    quantity=50,
+                    location="Warehouse D",
+                ),
+                Inventory(
+                    product_id=default_products[7].id,
+                    quantity=90,
+                    location="Warehouse D",
+                ),
+                Inventory(
+                    product_id=default_products[8].id,
+                    quantity=20,
+                    location="Warehouse A",
+                ),
+                Inventory(
+                    product_id=default_products[9].id,
+                    quantity=10,
+                    location="Warehouse A",
                 ),
             ]
             db.add_all(default_inventory)
