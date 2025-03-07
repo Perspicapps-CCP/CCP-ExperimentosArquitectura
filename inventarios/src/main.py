@@ -41,6 +41,7 @@ def healthcheck():
 @prefix_router.post("/reset")
 def reset(db: Session = Depends(get_db)):
     crud.reset_db(db)
+    init_db_with_defaults(db)
     return {"message": "Database reset"}
 
 

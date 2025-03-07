@@ -19,12 +19,13 @@ def get_db():
 
 
 # Initialize with default data
-def init_db_with_defaults():
+def init_db_with_defaults(db: SessionLocal = None):
     from src.models import Product, Inventory
 
+    db = db or SessionLocal()
     # Create tables if they don't exist
-    Base.metadata.create_all(bind=engine)
-    db = SessionLocal()
+    Base.metadata.create_all(bind=db.get_bind())
+
     try:
         # Check if we already have data
         if db.query(Product).count() == 0:

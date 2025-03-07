@@ -1,5 +1,8 @@
 import pika
 import threading
+import json
+
+from .services import reserve_items, InventoryReserveItem
 
 
 class RabbitMQConsumer:
@@ -22,12 +25,20 @@ class RabbitMQConsumer:
 
     def on_request(self, ch, method, props, body):
         """Handle incoming message"""
-        payload = str(body.decode("utf-8"))
+        payload = json.loads(body)
         print(f" [.] payload: {payload}")
 
         # EJECUTAR LOGICA DE INVENTARIO
-
-        self.response_callback(ch, method, props, payload)
+        reserve_items(
+            [
+                InventoryReserveItem(
+                    product_id=item["product_id"], quantity=item["quantity"]
+                )
+                for item in payload
+            ]
+        )
+        # Responde la misma respuesta que recibe
+        self.response_callback(ch, method, props, body)
 
     def response_callback(self, ch, method, props, message):
         """Send response back to sender"""

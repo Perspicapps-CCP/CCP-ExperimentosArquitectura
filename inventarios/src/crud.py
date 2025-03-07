@@ -1,3 +1,5 @@
+from typing import List
+
 from sqlalchemy.orm import Session, joinedload
 from src.models import Inventory, Product
 from src.database import Base
@@ -43,3 +45,12 @@ def update_inventory_item(
 def reset_db(db: Session) -> None:
     Base.metadata.drop_all(bind=db.get_bind())
     Base.metadata.create_all(bind=db.get_bind())
+
+
+def get_inventory_by_products_id(db: Session, product_ids: List[str]):
+    return (
+        db.query(Inventory)
+        .options(joinedload(Inventory.product))
+        .filter(Inventory.product_id.in_(product_ids))
+        .all()
+    )

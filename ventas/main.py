@@ -10,6 +10,7 @@ from database import engine, Base
 from db_dependency import get_db
 from purchases.api import purchases_router
 from products.api import products_router
+from seed_databse import seed
 
 
 prefix_router = APIRouter(prefix="/ventas")
@@ -23,9 +24,6 @@ if "pytest" not in sys.modules:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Load the ML model
-    from seed_databse import seed
-
     seed()
     yield
 
@@ -35,7 +33,7 @@ async def lifespan(app: FastAPI):
 def reset(db: Session = Depends(get_db)):
     Base.metadata.drop_all(bind=db.get_bind())
     Base.metadata.create_all(bind=db.get_bind())
-    db.commit()
+    seed(db)
     return schemas.DeleteResponse()
 
 

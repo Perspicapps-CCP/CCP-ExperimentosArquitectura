@@ -3,11 +3,12 @@ import pika
 import uuid
 import json
 from config import BROKER_HOST
+import time
 
 
 class BaseRPCClient:
 
-    def __init__(self, routing_key: str):
+    def __init__(self, routing_key: str, timeout: int = 30):
         self.connection = pika.BlockingConnection(
             pika.ConnectionParameters(host=BROKER_HOST)
         )
@@ -44,6 +45,11 @@ class BaseRPCClient:
             ),
             body=json.dumps(payload),
         )
+        start_at = time.time()
         while self.response is None:
+            if time.time() - start_at > 30:
+                self.connection.close()
+                raise TimeoutError("Timeout on RPC call")
             self.connection.process_data_events(time_limit=None)
+        self.connection.close()
         return json.loads(self.response)
