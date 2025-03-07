@@ -1,0 +1,198 @@
+# logistica DB
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logistica-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: logistica-db
+  template:
+    metadata:
+      labels:
+        app: logistica-db
+    spec:
+      containers:
+      - name: logistica-db
+        image: postgres:latest
+        env:
+        - name: POSTGRES_USER
+          value: logistica
+        - name: POSTGRES_PASSWORD
+          value: postgres
+        - name: POSTGRES_DB
+          value: logistica_db
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 5432
+        readinessProbe:
+          exec:
+            command:
+            - pg_isready
+            - -d
+            - $(POSTGRES_DB)
+            - -U
+            - $(POSTGRES_USER)
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 5
+        volumeMounts:
+        - name: logistica-data
+          mountPath: /var/lib/postgresql/data
+      volumes:
+      - name: logistica-data
+        persistentVolumeClaim:
+          claimName: logistica-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: logistica-db
+spec:
+  selector:
+    app: logistica-db
+  ports:
+  - port: 5432
+    targetPort: 5432
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: logistica-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+# logistica Broker Consumer
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logistica-broker-consumer
+  labels:
+    app: logistica-broker-consumer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: logistica-broker-consumer
+  template:
+    metadata:
+      labels:
+        app: logistica-broker-consumer
+    spec:
+      containers:
+      - name: logistica-broker-consumer
+        image: us-central1-docker.pkg.dev/saludtech-alpes/ccp-images/logistica:latest
+        command: ["python", "-u", "start_broker_consumer.py"]
+        env:
+        - name: DB_USER
+          value: logistica
+        - name: DB_PASSWORD
+          value: postgres
+        - name: DB_HOST
+          value: logistica-db
+        - name: DB_PORT
+          value: "5432"
+        - name: DB_NAME
+          value: logistica_db
+        - name: BROKER_HOST
+          value: rabbitmq
+        - name: CREATE_DELIVERY_TOPIC
+          value: rpc_create_delivery
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "200m"
+            memory: "256Mi"
+---
+# logistica API
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logistica-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: logistica-api
+  template:
+    metadata:
+      labels:
+        app: logistica-api
+    spec:
+      containers:
+      - name: logistica-api
+        image: us-central1-docker.pkg.dev/saludtech-alpes/ccp-images/logistica:latest
+        command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "9003"]
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+        ports:
+        - containerPort: 9003
+        env:
+        - name: DB_USER
+          value: logistica
+        - name: DB_PASSWORD
+          value: postgres
+        - name: DB_HOST
+          value: logistica-db
+        - name: DB_PORT
+          value: "5432"
+        - name: DB_NAME
+          value: logistica_db
+        - name: BROKER_HOST
+          value: rabbitmq
+        - name: CREATE_DELIVERY_TOPIC
+          value: rpc_create_delivery
+        livenessProbe:
+          httpGet:
+            path: /logistica/health
+            port: 9003
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 1
+          failureThreshold: 2
+---
+# HEALTHCHECK logistica
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: logistica-config
+spec:
+  healthCheck:
+    checkIntervalSec: 60
+    port: 9003
+    type: HTTP
+    requestPath: /logistica/health
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: logistica-api
+  annotations:
+    cloud.google.com/backend-config: '{"default": "logistica-config"}'
+spec:
+  selector:
+    app: logistica-api
+  ports:
+  - port: 9003
+    targetPort: 9003
