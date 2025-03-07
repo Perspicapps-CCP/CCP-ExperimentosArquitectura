@@ -6,12 +6,16 @@ services:
     image: rabbitmq:4.0-management
     container_name: rabbitmq
     ports:
-      - "5672:5672" 
+      - "5672:5672"
       - "15672:15672"
     restart: unless-stopped
     networks:
       - general
-
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 10s
+      timeout: 30s
+      retries: 3
   ventas_api:
     build: ./ventas
     command: uvicorn main:app --host 0.0.0.0 --port 9001
@@ -30,7 +34,7 @@ services:
       ventas_db:
         condition: service_healthy
       rabbitmq:
-        condition: service_started
+        condition: service_healthy
     networks:
       - general
       - ventas_net
@@ -76,12 +80,12 @@ services:
       inventario_db:
         condition: service_healthy
       rabbitmq:
-        condition: service_started
+        condition: service_healthy
     networks:
       - general
       - inventario_net
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8001/inventario/ping || exit 1"]
+      test: [ "CMD-SHELL", "curl -f http://localhost:8001/inventario/ping || exit 1" ]
       interval: 5s
       timeout: 1s
       retries: 2
@@ -97,17 +101,83 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: inventario_db
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
+      test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}" ]
       interval: 10s
       timeout: 5s
       retries: 5
     networks:
       - inventario_net
 
+  logistica_api:
+    build: ./logistica
+    command: uvicorn main:app --host 0.0.0.0 --port 9003
+    container_name: logistica_api
+    ports:
+      - "9003:9003"
+    environment:
+      DB_USER: logistica
+      DB_PASSWORD: postgres
+      DB_HOST: logistica_db
+      DB_PORT: 5432
+      DB_NAME: logistica_db
+      BROKER_HOST: rabbitmq
+      RESERVE_ITEMS_TOPIC: rpc_reserve_items
+    depends_on:
+      logistica_db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - general
+      - logistica_net
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:9003/logistica/health || exit 1" ]
+      interval: 5s
+      timeout: 1s
+      retries: 2
+    restart: on-failure
+  logistica_broker_consumer:
+    build: ./logistica
+    command: python -u start_broker_consumer.py
+    container_name: logistica_broker_consumer
+    environment:
+      DB_USER: logistica
+      DB_PASSWORD: postgres
+      DB_HOST: logistica_db
+      DB_PORT: 5432
+      DB_NAME: logistica_db
+      BROKER_HOST: rabbitmq
+      RESERVE_ITEMS_TOPIC: rpc_reserve_items
+    depends_on:
+      logistica_db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - general
+      - logistica_net
+  logistica_db:
+    image: postgres:latest
+    container_name: logistica_db
+    volumes:
+      - logistica_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: logistica
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: logistica_db
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - logistica_net
 volumes:
   ventas_data:
   inventario_data:
+  logistica_data:
 networks:
   general:
   ventas_net:
   inventario_net:
+  logistica_net:
