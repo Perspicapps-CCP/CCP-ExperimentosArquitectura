@@ -6,16 +6,22 @@ from pydantic import BaseModel, Field
 
 
 class DeleteResponse(BaseModel):
-    msg: str = "Compra eliminada"
+    msg: str = "Todos los datos fueron eliminados"
 
 
-class PurchaseItemCreate(BaseModel):
+class DeliveryItemSchema(BaseModel):
     product_id: uuid.UUID
     quantity: int
 
 
-class PurchaseItemResponse(PurchaseItemCreate):
-    price: float
+class DeliveryCreateSchema(BaseModel):
+    purchase_id: uuid.UUID
+    address_id: uuid.UUID
+    user_id: uuid.UUID
+    items: List[DeliveryItemSchema]
+
+
+class DeliveryItemResponseSchema(DeliveryItemSchema):
     created_at: datetime.datetime
     updated_at: Optional[datetime.datetime]
 
@@ -23,20 +29,13 @@ class PurchaseItemResponse(PurchaseItemCreate):
         orm_mode = True
 
 
-class PurchaseCreate(BaseModel):
-    user_id: uuid.UUID
-    address_id: uuid.UUID
-    items: List[PurchaseItemCreate]
-
-
-class PurchaseResponse(PurchaseCreate):
+class DeliveryDetailSchema(DeliveryCreateSchema):
     id: uuid.UUID
-    user_id: uuid.UUID
-    total_amount: float
     status: str
     created_at: datetime.datetime
     updated_at: Optional[datetime.datetime]
-    items: List[PurchaseItemResponse]
+    delivery_date: Optional[datetime.datetime]
+    items: List[DeliveryItemResponseSchema]
 
     class Config:
         orm_mode = True

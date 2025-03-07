@@ -3,6 +3,7 @@ from typing import Optional
 
 from pydantic import BaseModel
 
+
 class ManufacturerCreateBase(BaseModel):
     code: str
     name: str
@@ -33,9 +34,9 @@ class ManufacturerBatchResponse(BaseModel):
     message: str
 
 
-
 class DeleteManufacturerResponse(BaseModel):
     msg: str = "el fabricante fue eliminado"
 
+
 class DeleteResponse(BaseModel):
-        msg: str = "Todos los datos fueron eliminados"
+    msg: str = "Todos los datos fueron eliminados"

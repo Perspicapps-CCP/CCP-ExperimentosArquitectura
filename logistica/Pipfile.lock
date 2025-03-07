@@ -281,7 +281,6 @@
                 "sha256:b2a327ddddf8570b4965b3576ac77091b850262d34ce8c1d8cb4e4146aa4145f"
             ],
             "index": "boilerplate",
-            "markers": "python_version >= '3.7'",
             "version": "==1.3.2"
         },
         "psycopg2-binary": {

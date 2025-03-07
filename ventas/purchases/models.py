@@ -1,7 +1,7 @@
 import uuid
 import enum
 
-from sqlalchemy import Column, UUID, String, Enum, DateTime, Integer, ForeignKey, Float
+from sqlalchemy import Column, UUID, Enum, DateTime, Integer, ForeignKey, Float
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
@@ -37,10 +37,11 @@ class PurchaseItem(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     purchase_id = Column(UUID(as_uuid=True), ForeignKey("purchases.id"), nullable=False)
-    product_id = Column(UUID(as_uuid=True), nullable=False)
+    product_id = Column(UUID(as_uuid=True), ForeignKey("products.id"), nullable=False)
     quantity = Column(Integer, nullable=False)
     price = Column(Float, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
     purchase = relationship("Purchase", back_populates="items")
+    product = relationship("Product", back_populates="purchases")

@@ -2,10 +2,11 @@ from sqlalchemy.orm import Session
 from uuid import UUID, uuid4
 from typing import List, Optional
 
+from products.services import get_products_with_ids
 from . import models, schemas
 from .inventory_client.inventory_rpc_client import InventoryRpcClient
 from .inventory_client.entities import InventoryReserverdItem
-from .logistic_client.dummy_client import DummyLogisticClient
+from .logistic_client.logistic_rpc_client import LogisticRpcClient
 from .exceptions import CanotReserveAllProducts
 
 
@@ -15,24 +16,24 @@ def _save_items_to_databse(
     purchase: schemas.PurchaseCreate,
     items: List[InventoryReserverdItem],
 ) -> models.Purchase:
-    with db.begin():
-        db_purchase = models.Purchase(
-            id=purchase_id,
-            status=models.PurchaseStatus.PENDING,
-            user_id=purchase.user_id,
-            address_id=purchase.address_id,
-            total_amount=sum([item.price for item in items]),
+    db_purchase = models.Purchase(
+        id=purchase_id,
+        status=models.PurchaseStatus.PENDING,
+        user_id=purchase.user_id,
+        address_id=purchase.address_id,
+        total_amount=sum([item.price for item in items]),
+    )
+    db.add(db_purchase)
+    db.flush()
+    for item in items:
+        db_item = models.PurchaseItem(
+            purchase_id=purchase_id,
+            product_id=item.product_id,
+            quantity=item.quantity,
+            price=item.price,
         )
-        db.add(db_purchase)
-        db.flush()
-        for item in items:
-            db_item = models.PurchaseItem(
-                purchase_id=purchase_id,
-                product_id=item.product_id,
-                quantity=item.quantity,
-                price=item.price,
-            )
-            db.add(db_item)
+        db.add(db_item)
+    db.commit()
     db.refresh(db_purchase)
     return db_purchase
 
@@ -48,6 +49,11 @@ def create_purchase(db: Session, purchase: schemas.PurchaseCreate) -> models.Pur
     Returns:
         models.Purchase: The created purchase.
     """
+    # Ensure all product exists in the database
+    products = get_products_with_ids(db, [item.product_id for item in purchase.items])
+    if len(products) != len(purchase.items):
+        raise ValueError("Some products do not exist")
+
     logistic_client = InventoryRpcClient()
     order_id = uuid4()
     reserved_itmes = logistic_client.reserve_items(
@@ -76,7 +82,7 @@ def create_purchase(db: Session, purchase: schemas.PurchaseCreate) -> models.Pur
         raise CanotReserveAllProducts(errors)
     purchase = _save_items_to_databse(db, order_id, purchase, reserved_itmes)
     # Trigger purchase order creation
-    deliver = DummyLogisticClient().create_delivery_order(purchase)
+    deliver = LogisticRpcClient().create_delivery_order(purchase)
     # Change status to IN_PROGRESS
     purchase.status = models.PurchaseStatus.IN_PROGRESS
     purchase.delivery_order_id = deliver.order_id

@@ -1,6 +1,5 @@
 # Main application
 import sys
-from contextlib import asynccontextmanager
 
 from fastapi import Depends, FastAPI, APIRouter
 from sqlalchemy.orm import Session
@@ -8,26 +7,16 @@ from sqlalchemy.orm import Session
 import schemas
 from database import engine, Base
 from db_dependency import get_db
-from purchases.api import purchases_router
-from products.api import products_router
+from delivieries.api import deliveries_router
 
+app = FastAPI()
 
-prefix_router = APIRouter(prefix="/ventas")
+prefix_router = APIRouter(prefix="/logistica")
 
-prefix_router.include_router(purchases_router)
-prefix_router.include_router(products_router)
+prefix_router.include_router(deliveries_router)
 
 if "pytest" not in sys.modules:
     Base.metadata.create_all(bind=engine)
-
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    # Load the ML model
-    from seed_databse import seed
-
-    seed()
-    yield
 
 
 # Rest the database
@@ -45,5 +34,4 @@ def ping():
     return "pong"
 
 
-app = FastAPI(lifespan=lifespan)
 app.include_router(prefix_router)
