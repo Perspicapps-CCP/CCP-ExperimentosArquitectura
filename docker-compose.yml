@@ -174,7 +174,7 @@ services:
       - logistica_net
   proveedores_api:
     build: ./fabricantes
-    command: uvicorn main:app --host 0.0.0.0 --port 8002
+    command: uvicorn main:app --host 0.0.0.0 --port 8002 -workers 4
     container_name: proveedores_api
     ports:
       - "8002:8002"
