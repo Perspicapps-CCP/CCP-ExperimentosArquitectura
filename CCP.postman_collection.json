@@ -1,0 +1,441 @@
+{
+	"info": {
+		"_postman_id": "4181c443-795c-44a9-8eae-6600ec4cf137",
+		"name": "CCP",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "2331986"
+	},
+	"item": [
+		{
+			"name": "Ventas",
+			"item": [
+				{
+					"name": "Products",
+					"item": [
+						{
+							"name": "Listar todas",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{VENTAS_URL}}/productos",
+									"host": [
+										"{{VENTAS_URL}}"
+									],
+									"path": [
+										"productos"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Crear producto",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"price\": 15000.0,\n  \"name\": \"Café Colombiano\",\n  \"description\": \"Café de alta calidad cultivado en las montañas de Colombia.\",\n  \"sku\": \"CAF-001\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{VENTAS_URL}}/productos/",
+									"host": [
+										"{{VENTAS_URL}}"
+									],
+									"path": [
+										"productos",
+										""
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Pedidos",
+					"item": [
+						{
+							"name": "Listar",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{VENTAS_URL}}/compras",
+									"host": [
+										"{{VENTAS_URL}}"
+									],
+									"path": [
+										"compras"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Crear",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"user_id\": \"123e4567-e89b-12d3-a456-426614174000\",\n    \"address_id\": \"123e4567-e89b-12d3-a456-426614174001\",\n    \"items\": [\n        {\n            \"product_id\": \"22b98234-2a0c-42db-a77f-ffc5c784b76f\",\n            \"quantity\": 100\n        },\n        {\n            \"product_id\": \"67f69461-14e6-4d4c-809d-37128b9926a2\",\n            \"quantity\": 1\n        }\n    ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{VENTAS_URL}}/compras/",
+									"host": [
+										"{{VENTAS_URL}}"
+									],
+									"path": [
+										"compras",
+										""
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Health",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"who\",\n    \"description\": \"testing\",\n    \"type\": \"POSTGRES\",\n    \"credentials\": {\n        \"payload\": {\n            \"DB_USER\":\"DB_USER\",\n            \"DB_PASSWORD\":\"DB_PASSWORD\",\n            \"DB_HOST\":\"DB_HOST\",\n            \"DB_PORT\":\"DB_PORT\",\n            \"DB_NAME\":\"DB_NAME\"\n        },\n        \"source\": \"PASSWORD\"\n    },\n    \"provider_id\":\"afd19370-3387-4b24-9604-1ffe43afe91f\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{VENTAS_URL}}/health",
+							"host": [
+								"{{VENTAS_URL}}"
+							],
+							"path": [
+								"health"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "100",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "3",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete database",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"who\",\n    \"description\": \"testing\",\n    \"type\": \"POSTGRES\",\n    \"credentials\": {\n        \"payload\": {\n            \"DB_USER\":\"DB_USER\",\n            \"DB_PASSWORD\":\"DB_PASSWORD\",\n            \"DB_HOST\":\"DB_HOST\",\n            \"DB_PORT\":\"DB_PORT\",\n            \"DB_NAME\":\"DB_NAME\"\n        },\n        \"source\": \"PASSWORD\"\n    },\n    \"provider_id\":\"afd19370-3387-4b24-9604-1ffe43afe91f\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{VENTAS_URL}}/reset-db",
+							"host": [
+								"{{VENTAS_URL}}"
+							],
+							"path": [
+								"reset-db"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "100",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "3",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Logistica",
+			"item": [
+				{
+					"name": "Listar todas",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{LOGISTICA_URL}}/entregas",
+							"host": [
+								"{{LOGISTICA_URL}}"
+							],
+							"path": [
+								"entregas"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Crear enterega",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user_id\": \"123e4567-e89b-12d3-a456-426614174000\",\n    \"address_id\": \"123e4567-e89b-12d3-a456-426614174001\",\n    \"purchase_id\":\"123e4567-e89b-12d3-a456-426614174001\",\n    \"items\": [\n        {\n            \"product_id\": \"123e4567-e89b-12d3-a456-426614174002\",\n            \"quantity\": 2\n        },\n        {\n            \"product_id\": \"123e4567-e89b-12d3-a456-426614174003\",\n            \"quantity\": 1\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{LOGISTICA_URL}}/entregas/",
+							"host": [
+								"{{LOGISTICA_URL}}"
+							],
+							"path": [
+								"entregas",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Healt",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{LOGISTICA_URL}}/health",
+							"host": [
+								"{{LOGISTICA_URL}}"
+							],
+							"path": [
+								"health"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "100",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "3",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete database",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"who\",\n    \"description\": \"testing\",\n    \"type\": \"POSTGRES\",\n    \"credentials\": {\n        \"payload\": {\n            \"DB_USER\":\"DB_USER\",\n            \"DB_PASSWORD\":\"DB_PASSWORD\",\n            \"DB_HOST\":\"DB_HOST\",\n            \"DB_PORT\":\"DB_PORT\",\n            \"DB_NAME\":\"DB_NAME\"\n        },\n        \"source\": \"PASSWORD\"\n    },\n    \"provider_id\":\"afd19370-3387-4b24-9604-1ffe43afe91f\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{LOGISTICA_URL}}/reset-db",
+							"host": [
+								"{{LOGISTICA_URL}}"
+							],
+							"path": [
+								"reset-db"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "100",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "3",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Inventario",
+			"item": [
+				{
+					"name": "Listar",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{INVENTARIO_URL}}/inventory",
+							"host": [
+								"{{INVENTARIO_URL}}"
+							],
+							"path": [
+								"inventory"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Healt",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{INVENTARIO_URL}}/ping",
+							"host": [
+								"{{INVENTARIO_URL}}"
+							],
+							"path": [
+								"ping"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "100",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "3",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete database",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"who\",\n    \"description\": \"testing\",\n    \"type\": \"POSTGRES\",\n    \"credentials\": {\n        \"payload\": {\n            \"DB_USER\":\"DB_USER\",\n            \"DB_PASSWORD\":\"DB_PASSWORD\",\n            \"DB_HOST\":\"DB_HOST\",\n            \"DB_PORT\":\"DB_PORT\",\n            \"DB_NAME\":\"DB_NAME\"\n        },\n        \"source\": \"PASSWORD\"\n    },\n    \"provider_id\":\"afd19370-3387-4b24-9604-1ffe43afe91f\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{INVENTARIO_URL}}/reset",
+							"host": [
+								"{{INVENTARIO_URL}}"
+							],
+							"path": [
+								"reset"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "100",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "3",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "VENTAS_URL",
+			"value": "localhost:9001/ventas",
+			"type": "string"
+		},
+		{
+			"key": "USER_UUID",
+			"value": "2a68497f-944f-4d3b-b3b3-6b1455ff3bf0",
+			"type": "string"
+		},
+		{
+			"key": "LOGISTICA_URL",
+			"value": "localhost:9003/logistica",
+			"type": "string"
+		},
+		{
+			"key": "INVENTARIO_URL",
+			"value": "localhost:9002/inventario",
+			"type": "string"
+		}
+	]
+}
