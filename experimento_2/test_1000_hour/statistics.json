@@ -1,0 +1,34 @@
+{
+  "Crear pedido" : {
+    "transaction" : "Crear pedido",
+    "sampleCount" : 6993,
+    "errorCount" : 0,
+    "errorPct" : 0.0,
+    "meanResTime" : 879.9818389818374,
+    "medianResTime" : 1218.0,
+    "minResTime" : 205.0,
+    "maxResTime" : 2228.0,
+    "pct1ResTime" : 1247.0,
+    "pct2ResTime" : 1258.0,
+    "pct3ResTime" : 1286.0,
+    "throughput" : 1.9423732061934846,
+    "receivedKBytesPerSec" : 1.3410721257605407,
+    "sentKBytesPerSec" : 1.0603384983028885
+  },
+  "Total" : {
+    "transaction" : "Total",
+    "sampleCount" : 6993,
+    "errorCount" : 0,
+    "errorPct" : 0.0,
+    "meanResTime" : 879.9818389818374,
+    "medianResTime" : 1218.0,
+    "minResTime" : 205.0,
+    "maxResTime" : 2228.0,
+    "pct1ResTime" : 1247.0,
+    "pct2ResTime" : 1258.0,
+    "pct3ResTime" : 1286.0,
+    "throughput" : 1.9423732061934846,
+    "receivedKBytesPerSec" : 1.3410721257605407,
+    "sentKBytesPerSec" : 1.0603384983028885
+  }
+}
