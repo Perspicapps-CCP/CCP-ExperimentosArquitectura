@@ -105,6 +105,15 @@ spec:
           value: rabbitmq
         - name: RESERVE_ITEMS_TOPIC
           value: rpc_reserve_items
+        resources:
+          limits:
+            cpu: "0.5"
+            memory: "1Gi"
+            ephemeral-storage: "2Gi"
+          requests:
+            cpu: "0.5"
+            memory: "1Gi"
+            ephemeral-storage: "1Gi"
         livenessProbe:
           httpGet:
             path: /ventas/health
