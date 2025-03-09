@@ -29,7 +29,9 @@ app.mount("/static", StaticFiles(directory="src/static"), name="static")
 prefix_router = APIRouter(prefix="/inventario")
 
 sio = socketio.AsyncServer(
-    cors_allowed_origins="*", async_mode="asgi", transports=["websocket", "polling"]
+    cors_allowed_origins="*", async_mode="asgi", 
+    transports=["websocket", "polling"],
+    ping_timeout=60, ping_interval=25
 )
 
 
@@ -62,6 +64,7 @@ async def connect(sid, environ):
 
 @sio.event
 async def disconnect(sid):
+    sio.disconnect(sid)
     print(f"Client disconnected: {sid}")
 
 
