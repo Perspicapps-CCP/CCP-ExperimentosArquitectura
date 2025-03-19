@@ -97,3 +97,7 @@ To run the tests, use the following command:
 ```sh 
     uvicorn main:app  --port 8000
 ```
+
+
+
+pytest --cov=. -v -s --cov-fail-under=70
