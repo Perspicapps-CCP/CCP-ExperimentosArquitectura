@@ -9,7 +9,6 @@ on:
 env:
   PROJECT_ID: ccp-perspicapps
   REGION: us-central1
-  GAR_LOCATION: us-central1-docker.pkg.dev/ccp-perspicapps/ccp-images/
 
 permissions:
   contents: read
@@ -72,10 +71,10 @@ jobs:
       - name: Build image
         working-directory: ./logistica
         run: |
-          docker build . --tag ${{ env.GAR_LOCATION }}logistica:${{ steps.generate_tag.outputs.version_tag }}
-          docker build . --tag ${{ env.GAR_LOCATION }}logistica:latest
+          docker build . --tag ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/ccp-images/logistica:${{ steps.generate_tag.outputs.version_tag }}
+          docker build . --tag ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/ccp-images/logistica:latest
         
       - name: Push image to artifact registry
         run: |
-          docker push ${{ env.GAR_LOCATION }}logistica:${{ steps.generate_tag.outputs.version_tag }}
-          docker push ${{ env.GAR_LOCATION }}logistica:latest
+          docker push ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/ccp-images/logistica:${{ steps.generate_tag.outputs.version_tag }}
+          docker push ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/ccp-images/logistica:latest
