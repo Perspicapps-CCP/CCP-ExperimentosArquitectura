@@ -1,4 +1,4 @@
-name: Run CI for python application
+name: Run CI/CD for python application
 
 on:
   push:
@@ -73,8 +73,17 @@ jobs:
         run: |
           docker build . --tag ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/ccp-images/logistica:${{ steps.generate_tag.outputs.version_tag }}
           docker build . --tag ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/ccp-images/logistica:latest
-        
+
       - name: Push image to artifact registry
         run: |
           docker push ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/ccp-images/logistica:${{ steps.generate_tag.outputs.version_tag }}
           docker push ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/ccp-images/logistica:latest
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Deploy application
+      run: |
+        echo "Deployment would happen here"
+        # Add your deployment commands here
