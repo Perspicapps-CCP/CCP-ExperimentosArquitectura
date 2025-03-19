@@ -39,7 +39,7 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     steps:
-      - name: "Checkout"
+      - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -59,13 +59,13 @@ jobs:
         with:
           credentials_json: "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}"
 
-      - name: Set up Cloud SDK
+      - name: Set up cloud SDK
         uses: google-github-actions/setup-gcloud@v2
 
       - name: Use gcloud CLI
         run: gcloud info
 
-      - name: Docker auth
+      - name: Artifact registry auth
         run: |
           gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
 
@@ -75,7 +75,7 @@ jobs:
           docker build . --tag ${{ env.GAR_LOCATION }}logistica:${{ steps.generate_tag.outputs.version_tag }}
           docker build . --tag ${{ env.GAR_LOCATION }}logistica:latest
         
-      - name: Push image
+      - name: Push image to artifact registry
         run: |
           docker push ${{ env.GAR_LOCATION }}logistica:${{ steps.generate_tag.outputs.version_tag }}
           docker push ${{ env.GAR_LOCATION }}logistica:latest
