@@ -97,10 +97,14 @@ jobs:
 
       - name: Set up cloud SDK
         uses: google-github-actions/setup-gcloud@v2
+        with:
+          install_components: 'gke-gcloud-auth-plugin'
 
       - name: Get GKE credentials
         run: |
           gcloud container clusters get-credentials ccp-autopilot --region ${{ env.REGION }}
+          # Set environment variable to ensure gke-gcloud-auth-plugin is used
+          echo "USE_GKE_GCLOUD_AUTH_PLUGIN=True" >> $GITHUB_ENV
 
       - name: 'Set up Kustomize'
         run: |-

@@ -5,6 +5,6 @@ resources:
 - k8s-logistica-deploy.yml
 
 images:
-- name: us-central1-docker.pkg.dev/saludtech-alpes/ccp-images/logistica
+- name: us-central1-docker.pkg.dev/ccp-perspicapps/ccp-images/logistica
   newName: us-central1-docker.pkg.dev/ccp-perspicapps/ccp-images/logistica
   newTag: latest
