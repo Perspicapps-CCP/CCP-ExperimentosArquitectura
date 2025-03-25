@@ -113,8 +113,8 @@ jobs:
       - name: 'Deploy to GKE'
         working-directory: ./base
         run: |-
-          ./kustomize edit set image ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/ccp-images/logistica:latest=${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/ccp-images/logistica:${{ needs.build.outputs.version_tag }}
-          ./kustomize build . | kubectl apply -f -
+          kustomize edit set image ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/ccp-images/logistica:latest=${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/ccp-images/logistica:${{ needs.build.outputs.version_tag }}
+          kustomize build . | kubectl apply -f -
           kubectl rollout status deployment/logistica-api
           kubectl rollout status deployment/logistica-broker-consumer
           kubectl get services -o wide
