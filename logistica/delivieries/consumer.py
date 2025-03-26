@@ -1,11 +1,12 @@
 from typing import Dict
-from seedwork.base_consumer import BaseConsumer
 
 from config import CREATE_DELIVERY_TOPIC
 from database import SessionLocal
-from .services import create_delivery
-from .schemas import DeliveryCreateSchema
+from seedwork.base_consumer import BaseConsumer
+
 from .mappers import delivery_to_schema
+from .schemas import DeliveryCreateSchema
+from .services import create_delivery
 
 
 class CreateDeliveryConsumer(BaseConsumer):

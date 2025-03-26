@@ -1,11 +1,11 @@
 # Main application
 import sys
 
-from fastapi import Depends, FastAPI, APIRouter
+from fastapi import APIRouter, Depends, FastAPI
 from sqlalchemy.orm import Session
 
 import schemas
-from database import engine, Base
+from database import Base, engine
 from db_dependency import get_db
 from delivieries.api import deliveries_router
 

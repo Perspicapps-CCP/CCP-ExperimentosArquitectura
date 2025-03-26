@@ -19,6 +19,7 @@ pytest = "*"
 faker = "*"
 coverage = "*"
 pytest-cov = "*"
+pre-commit = "*"
 
 [requires]
 python_version = "3.13"

@@ -1,4 +1,5 @@
 import os
+
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -11,6 +12,10 @@ DB_PORT = os.getenv("DB_PORT", "5432")
 DB_NAME = os.getenv("DB_NAME", "logistica")
 USERS_PATH = os.getenv("USERS_PATH")
 BROKER_HOST = os.getenv("BROKER_HOST", "localhost")
-CREATE_DELIVERY_TOPIC = os.getenv("CREATE_DELIVERY_TOPIC", "rpc_create_delivery")
+CREATE_DELIVERY_TOPIC = os.getenv(
+    "CREATE_DELIVERY_TOPIC", "rpc_create_delivery"
+)
 
-DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+DATABASE_URL = (
+    f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+)

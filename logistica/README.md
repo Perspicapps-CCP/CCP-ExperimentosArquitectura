@@ -94,10 +94,29 @@ This project is a FastAPI application for managing sales and purchases. It inclu
 
 To run the tests, use the following command:
 
-```sh 
+```sh
     uvicorn main:app  --port 8000
 ```
 
 
 
 pytest --cov=. -v -s --cov-fail-under=70
+
+
+Pre commit
+
+```
+pre-commit install
+
+<!-- manually -->
+pre-commit run --all-files
+
+```
+
+Run black
+```
+<!-- All files -->
+black .
+<!-- Single file -->
+black path_to_file
+```

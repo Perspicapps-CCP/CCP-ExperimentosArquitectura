@@ -1,7 +1,7 @@
-from typing import Dict
-from abc import ABC, abstractmethod
-import threading
 import json
+import threading
+from abc import ABC, abstractmethod
+from typing import Dict
 
 import pika
 
@@ -20,7 +20,9 @@ class BaseConsumer(threading.Thread, ABC):
         channel = connection.channel()
         channel.queue_declare(queue=self.queue)
         channel.basic_qos(prefetch_count=1)
-        channel.basic_consume(queue=self.queue, on_message_callback=self.callback)
+        channel.basic_consume(
+            queue=self.queue, on_message_callback=self.callback
+        )
         channel.start_consuming()
 
     @abstractmethod
@@ -33,7 +35,13 @@ class BaseConsumer(threading.Thread, ABC):
         ch.basic_publish(
             exchange="",
             routing_key=props.reply_to,
-            properties=pika.BasicProperties(correlation_id=props.correlation_id),
-            body=json.dumps(response) if isinstance(response, dict) else response,
+            properties=pika.BasicProperties(
+                correlation_id=props.correlation_id
+            ),
+            body=(
+                json.dumps(response)
+                if isinstance(response, dict)
+                else response
+            ),
         )
         ch.basic_ack(delivery_tag=method.delivery_tag)

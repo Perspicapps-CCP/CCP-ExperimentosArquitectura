@@ -1,9 +1,8 @@
-from typing import Dict, List
+from typing import Dict
+
 import pytest
-from fastapi.testclient import TestClient
-from main import app
 from faker import Faker
-from uuid import uuid4
+from fastapi.testclient import TestClient
 
 fake = Faker()
 fake.seed_instance(0)
@@ -19,8 +18,14 @@ def delivery_payload() -> Dict:
         "address_id": fake.uuid4(),
         "user_id": fake.uuid4(),
         "items": [
-            {"product_id": fake.uuid4(), "quantity": fake.random_int(min=1, max=10)},
-            {"product_id": fake.uuid4(), "quantity": fake.random_int(min=1, max=10)},
+            {
+                "product_id": fake.uuid4(),
+                "quantity": fake.random_int(min=1, max=10),
+            },
+            {
+                "product_id": fake.uuid4(),
+                "quantity": fake.random_int(min=1, max=10),
+            },
         ],
     }
 
@@ -39,7 +44,9 @@ def test_get_delivery(client: TestClient, delivery_payload: Dict) -> None:
     Test retrieving a delivery by its ID.
     """
     # First, create a delivery
-    create_response = client.post("/logistica/entregas/", json=delivery_payload)
+    create_response = client.post(
+        "/logistica/entregas/", json=delivery_payload
+    )
     delivery_id = create_response.json()["id"]
 
     # Then, get the delivery
@@ -62,7 +69,9 @@ def test_delete_delivery(client: TestClient, delivery_payload: Dict) -> None:
     Test deleting a delivery by its ID.
     """
     # First, create a delivery
-    create_response = client.post("/logistica/entregas/", json=delivery_payload)
+    create_response = client.post(
+        "/logistica/entregas/", json=delivery_payload
+    )
     delivery_id = create_response.json()["id"]
 
     # Then, delete the delivery

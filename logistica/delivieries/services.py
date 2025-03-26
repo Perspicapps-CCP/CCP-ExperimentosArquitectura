@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
-from uuid import UUID, uuid4
 from typing import List, Optional
+from uuid import UUID, uuid4
 
 from sqlalchemy.orm import Session
 
@@ -39,13 +39,17 @@ def get_delivery(db: Session, delivery_id: UUID) -> Optional[models.Delivery]:
     Get a delivery by its ID.
     Args:
         db (Session): The database session to use for the query.
-        delivery_id (UUID): The unique identifier of the delivery to retrieve.
+        delivery_id (UUID): The unique identifier of the
+        delivery to retrieve.
     Returns:
-        Optional[models.Delivery]: The delivery object if found, otherwise None.
+        Optional[models.Delivery]: The delivery object if found,
+         otherwise None.
     """
-
-    """Get a delivery by its ID."""
-    return db.query(models.Delivery).filter(models.Delivery.id == delivery_id).first()
+    return (
+        db.query(models.Delivery)
+        .filter(models.Delivery.id == delivery_id)
+        .first()
+    )
 
 
 def get_deliveries(
@@ -61,7 +65,9 @@ def get_deliveries(
     )
 
 
-def delete_delivery(db: Session, delivery_id: UUID) -> Optional[models.Delivery]:
+def delete_delivery(
+    db: Session, delivery_id: UUID
+) -> Optional[models.Delivery]:
     """Delete a delivery by its ID."""
     db_delivery = get_delivery(db, delivery_id)
     if db_delivery is not None:

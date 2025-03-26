@@ -1,7 +1,9 @@
-from . import schemas, models
+from . import models, schemas
 
 
-def delivery_to_schema(purchase: models.Delivery) -> schemas.DeliveryDetailSchema:
+def delivery_to_schema(
+    purchase: models.Delivery,
+) -> schemas.DeliveryDetailSchema:
     return schemas.DeliveryDetailSchema(
         id=purchase.id,
         purchase_id=purchase.purchase_id,

@@ -2,15 +2,15 @@
 from typing import Any, Generator
 
 import pytest
+from fastapi import FastAPI
+from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from fastapi import FastAPI
 from sqlalchemy.pool import StaticPool
-from fastapi.testclient import TestClient
 
-from main import app as init_app
-from db_dependency import get_db
 from database import Base
+from db_dependency import get_db
+from main import app as init_app
 
 SQLALCHEMY_DATABASE_URL = "sqlite://"
 
@@ -19,7 +19,9 @@ engine = create_engine(
     connect_args={"check_same_thread": False},
     poolclass=StaticPool,
 )
-TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+TestingSessionLocal = sessionmaker(
+    autocommit=False, autoflush=False, bind=engine
+)
 
 
 @pytest.fixture
@@ -41,7 +43,8 @@ def app() -> Generator[FastAPI, Any, None]:
 def db_session(app: FastAPI) -> Generator["TestingSessionLocal", Any, None]:
     """
     Creates a fresh sqlalchemy session for each test that operates in a
-    transaction. The transaction is rolled back at the end of each test ensuring
+    transaction. The transaction is rolled back at
+    the end of each test ensuring
     a clean state.
     """
 
@@ -66,8 +69,9 @@ def client(
     app: FastAPI, db_session: "TestingSessionLocal"
 ) -> Generator[TestClient, Any, None]:
     """
-    Create a new FastAPI TestClient that uses the `db_session` fixture to override
-    the `get_db` dependency that is injected into routes.
+    Create a new FastAPI TestClient that uses the `db_session`
+    fixture to override the `get_db` dependency that is injected
+    into routes.
     """
 
     def _get_test_db():

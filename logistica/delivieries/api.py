@@ -1,12 +1,12 @@
-from uuid import UUID
 from typing import List
+from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from . import services, schemas, mappers
 from db_dependency import get_db
 
+from . import mappers, schemas, services
 
 deliveries_router = APIRouter(prefix="/entregas")
 
@@ -19,7 +19,9 @@ def create_delivery(
     return mappers.delivery_to_schema(delivery)
 
 
-@deliveries_router.get("/{delivery_id}", response_model=schemas.DeliveryDetailSchema)
+@deliveries_router.get(
+    "/{delivery_id}", response_model=schemas.DeliveryDetailSchema
+)
 def delivery_detail(delivery_id: UUID, db: Session = Depends(get_db)):
     db_delivery = services.get_delivery(db, delivery_id=delivery_id)
     if db_delivery is None:
@@ -30,12 +32,16 @@ def delivery_detail(delivery_id: UUID, db: Session = Depends(get_db)):
 
 
 @deliveries_router.get("/", response_model=List[schemas.DeliveryDetailSchema])
-def list_all_deliveries(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+def list_all_deliveries(
+    skip: int = 0, limit: int = 10, db: Session = Depends(get_db)
+):
     deliveries = services.get_deliveries(db, skip=skip, limit=limit)
     return [mappers.delivery_to_schema(delivery) for delivery in deliveries]
 
 
-@deliveries_router.delete("/{delivery_id}", response_model=schemas.DeleteResponse)
+@deliveries_router.delete(
+    "/{delivery_id}", response_model=schemas.DeleteResponse
+)
 def delete_delivery(delivery_id: UUID, db: Session = Depends(get_db)):
     db_delivery = services.delete_delivery(db, delivery_id=delivery_id)
     if db_delivery is None:
